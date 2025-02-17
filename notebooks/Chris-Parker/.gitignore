@@ -2,8 +2,3 @@
 .ipynb_checkpoints
 .DS_Store
 .env
-.venv
-logs/
-venv/
-plugins/
-config/

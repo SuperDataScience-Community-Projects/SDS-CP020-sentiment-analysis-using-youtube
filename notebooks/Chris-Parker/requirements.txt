@@ -1,0 +1,11 @@
+# Contains all libraries that are needed for this project
+pandas
+numpy
+google-api-python-client
+emoji
+transformers
+torch
+streamlit
+joblib
+matplotlib
+python-dotenv
