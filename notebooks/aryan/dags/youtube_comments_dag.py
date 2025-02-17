@@ -80,6 +80,7 @@ with DAG(dag_id='youtube_comments_etl_pipeline',
         pg_hook = PostgresHook(postgres_conn_id='aryan-postgres-1')
         db_conn = pg_hook.get_conn()
         db_cursor = db_conn.cursor()
+        db_cursor.execute("""DROP TABLE IF EXISTS comments""")
         db_cursor.execute("""
             CREATE TABLE IF NOT EXISTS comments (
                 author TEXT,
