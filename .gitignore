@@ -7,3 +7,4 @@ logs/
 venv/
 plugins/
 config/
+youtube_sentiment/

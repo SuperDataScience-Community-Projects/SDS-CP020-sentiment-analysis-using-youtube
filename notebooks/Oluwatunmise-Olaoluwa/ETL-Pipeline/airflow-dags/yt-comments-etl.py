@@ -5,6 +5,7 @@ from airflow.utils.dates import days_ago
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
 from googleapiclient.errors import HttpError
+from pendulum import today
 import os
 
 load_dotenv() # take environment variables from .env.
@@ -112,6 +113,7 @@ def run_etl_process():
                 f.write(comment + '\n')
         
         print("ETL process completed successfully")
+        
     except Exception as e:
         print(f"ETL process failed: {str(e)}")
         raise
@@ -124,15 +126,15 @@ default_args = {
     'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    'start_date': days_ago(1)
+    'start_date': today("UTC").add(days=-1)
 }
 
 # Create the DAG
 dag = DAG(
-    'daily_etl_process',
+    'yt_comments_etl',
     default_args=default_args,
     description='Daily ETL process using Python',
-    schedule_interval='0 0 * * *',  # Run at midnight every day
+    schedule='0 0 * * *',  # Run at midnight every day
     catchup=False
 )
 
@@ -144,9 +146,8 @@ etl_task = PythonOperator(
 )
 
 # If you need to add any environment variables or configurations:
-'''
+
 from airflow.models import Variable
 
 # Set up environment variables in Airflow
-# API_KEY = Variable.get("API_KEY")
-'''
+api_key = os.getenv("MY_API_KEY")
