@@ -7,6 +7,7 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.decorators import task
 from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.models import Variable
 
 load_dotenv()
 
@@ -27,7 +28,8 @@ with DAG(dag_id='youtube_comments_etl_pipeline',
     
 
     @task
-    def retrieve_comments_via_api(video_id):
+    def retrieve_comments_via_api():
+        video_id = Variable.get("yt_video_id", default_var = "G8ZiyDlbHBQ")
         os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
         youtube = googleapiclient.discovery.build(
@@ -78,6 +80,7 @@ with DAG(dag_id='youtube_comments_etl_pipeline',
         pg_hook = PostgresHook(postgres_conn_id='aryan-postgres-1')
         db_conn = pg_hook.get_conn()
         db_cursor = db_conn.cursor()
+        db_cursor.execute("""DROP TABLE IF EXISTS comments""")
         db_cursor.execute("""
             CREATE TABLE IF NOT EXISTS comments (
                 author TEXT,
@@ -113,8 +116,12 @@ with DAG(dag_id='youtube_comments_etl_pipeline',
         db_cursor.close()
         db_conn.close()
 
+    @task
+    def perform_sentiment_analysis():
+        pass
+
     # 1. Retrieve comments via API (Extract)
-    youtube_response = retrieve_comments_via_api(video_id='G8ZiyDlbHBQ')
+    youtube_response = retrieve_comments_via_api()
 
     #2. Clean comments Data (Transform)
     cleaned_youtube_response = clean_comments_data(youtube_response)
