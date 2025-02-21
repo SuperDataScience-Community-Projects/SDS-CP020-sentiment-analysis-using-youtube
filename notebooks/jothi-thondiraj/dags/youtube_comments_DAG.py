@@ -59,7 +59,7 @@ with DAG(dag_id='youtube_comments_etl_pipeline',
         #     return bool(url_pattern.search(text))
         def remove_URL(text):
             url = re.compile(r'https?://\S+|www\.\S+')
-            return url.sub(r'',text)    
+            return url.sub(r'',text)
         def remove_emoji(text):
             emoji_pattern = re.compile("["
                                 u"\U0001F600-\U0001F64F"  # emoticons
@@ -127,14 +127,23 @@ with DAG(dag_id='youtube_comments_etl_pipeline',
         # print("records:",records)
         # print("type(records):",[type(rec) for rec in records[0]])
         for record in records:
-            cursor.execute(insert_query, record)    
+            cursor.execute(insert_query, record)                
         conn.commit()
+        # extracted_data = pd.read_sql_query("SELECT * FROM users", conn)
         cursor.close()
         conn.close()
+        return extracted_data
+
+    @task
+    def perform_sentiment_analysis(clean_data):
+        st.write(clean_data)
+        st.write("Hello")
+        
     ## DAG Worflow- ETL Pipeline
     weather_data = extract_youtube_data()
     transformed_data = transform_youtube_data(weather_data)
-    load_youtube_data(transformed_data)
+    clean_data = load_youtube_data(transformed_data)
+    perform_sentiment_analysis(clean_data)
 
 
 

@@ -1,14 +1,23 @@
-default_args = {
-    'owner': 'airflow',
-    'depends_on_past': False,
-    'start_date': datetime(2024, 6, 20),
-    'retries': 1,
-    'retry_delay': timedelta(minutes=5),
-}
+import streamlit as st
+import pandas as pd
+import numpy as np
+import os
 
-dag = DAG(
-    'fetch_and_store_amazon_books',
-    default_args=default_args,
-    description='A simple DAG to fetch book data from Amazon and store it in Postgres',
-    schedule_interval=timedelta(days=1),
-)
+# Print the current working directory
+# print(os.getcwd())
+#=========================================
+# st.write("hello world")
+# x = st.text_input("Favorite Movie?")
+# st.write(f"Your favorite movie is: {x}")
+#=========================================
+# Write from csv file.
+# data = pd.read_csv("./movies_data.csv")
+# st.write(data)
+#=========================================
+
+chart_data = pd.DataFrame(
+                np.random.randn(20,3),
+                columns=["a","b","c"]
+                )
+st.bar_chart(chart_data)
+st.line_chart(chart_data)
